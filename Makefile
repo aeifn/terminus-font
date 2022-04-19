@@ -8,6 +8,7 @@ UCS2X11 = $(INT) $(BIN)/ucstoany.$(EXT) -f
 BDF2PCF = bdftopcf
 #BDF2OTB = fontforge -lang=ff -c 'Open($$3); ScaleToEm(1024); Generate($$2)'
 BDF2OTB = $(INT) $(BIN)/otb1cli.$(EXT)
+BDF2FNT = vtfontcvt
 
 REG_8859_1  = ISO8859 1
 REG_8859_2  = ISO8859 2
@@ -80,6 +81,8 @@ PCF = $(PCF_10646_1)
 
 OTB = ter-u12n.otb ter-u12b.otb ter-u14n.otb ter-u14b.otb ter-u16n.otb ter-u16b.otb ter-u18n.otb ter-u18b.otb ter-u20n.otb ter-u20b.otb ter-u22n.otb ter-u22b.otb ter-u24n.otb ter-u24b.otb ter-u28n.otb ter-u28b.otb ter-u32n.otb ter-u32b.otb
 
+FNT = ter-u12n.fnt ter-u12b.fnt ter-u14n.fnt ter-u14b.fnt ter-u16n.fnt ter-u16b.fnt ter-u18n.fnt ter-u18b.fnt ter-u20n.fnt ter-u20b.fnt ter-u22n.fnt ter-u22b.fnt ter-u24n.fnt ter-u24b.fnt ter-u28n.fnt ter-u28b.fnt ter-u32n.fnt ter-u32b.fnt
+
 # Default
 
 all: $(PSF) $(PCF)
@@ -89,6 +92,7 @@ prefix  = /usr/local
 psfdir  = $(prefix)/share/consolefonts
 x11dir  = $(prefix)/share/fonts/terminus
 otbdir  = $(prefix)/share/fonts/terminus
+fntdir  = $(prefix)/share/vt/fonts
 
 install: $(PSF) $(PCF)
 	mkdir -p $(DESTDIR)$(psfdir)
@@ -306,6 +310,21 @@ install-otb: $(OTB)
 
 uninstall-otb:
 	for i in $(OTB) ; do rm -f $(DESTDIR)$(otbdir)/$$i ; done
+
+# FreeBSD fnt
+
+$(FNT): ter-u%.fnt : ter-u%.bdf
+	$(BDF2FNT) -f font -o $@ $<
+
+fnt: $(FNT)
+
+install-fnt: $(FNT)
+	mkdir -p $(DESTDIR)$(fntdir)
+	cp -f $(FNT) $(DESTDIR)$(fntdir)
+
+uninstall-fnt:
+	for i in $(FNT) ; do rm -f $(DESTDIR)$(fntdir)/$$i ; done
+
 
 # Cleanup
 
